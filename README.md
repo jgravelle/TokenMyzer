@@ -74,6 +74,18 @@ Copypip install -r requirements.txt
 Add your Groq API key: GROQ_API_KEY=your_api_key_here
 
 
+### API Key Setup
+
+The app requires a Groq API key to function. You can provide this key in one of three ways:
+
+1. **Environment Variable**: Set the `GROQ_API_KEY` environment variable on your system or in a `.env` file in the project root.
+
+2. **Streamlit Cloud Secrets**: When deploying to Streamlit Cloud, set the `GROQ_API_KEY` in the app's secrets management as described in the "Streamlit Cloud Deployment" section.
+
+3. **Manual Input**: If no API key is found, the app will prompt you to enter it manually. This key will be saved for the current session and optionally stored in a `.env` file for future use.
+
+Note: When entering the API key manually, ensure you're using a secure, private browsing session if on a shared computer.
+
 
 ## Running the App
 
