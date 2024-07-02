@@ -1,14 +1,12 @@
 # src/api/groq_api.py
 
 import streamlit as st
-import requests
 from groq import Groq
 import os
 from dotenv import load_dotenv
 
 class GroqAPI:
-    def __init__(self, config):
-        self.config = config
+    def __init__(self):
         self.client = None
         self.initialize_client()
 
@@ -16,37 +14,38 @@ class GroqAPI:
         api_key = self.get_api_key()
         if api_key:
             self.client = Groq(api_key=api_key)
-            self.config['api_key'] = api_key
-        else:
-            st.error("No API key provided. The app cannot function without a valid Groq API key.")
-            st.stop()
+            self.test_api_key()  # Test the API key
 
     def get_api_key(self):
         # Try to get the API key from environment variables
-        load_dotenv()  # This loads the .env file if it exists
+        load_dotenv()
         api_key = os.getenv("GROQ_API_KEY")
         
-        # If not found in environment, prompt the user
+        # If not found in environment, check session state
+        if not api_key and 'groq_api_key' in st.session_state:
+            api_key = st.session_state.groq_api_key
+        
+        # If still not found, prompt the user
         if not api_key:
-            st.warning("GROQ_API_KEY not found in environment variables.")
-            api_key = st.text_input("Please enter your Groq API key:", type="password")
+            api_key = st.text_input("Please enter your Groq API key:", type="password", key="api_key_input")
             if api_key:
-                # Optionally, you can save this to .env file for future use
-                with open(".env", "a") as env_file:
-                    env_file.write(f"\nGROQ_API_KEY={api_key}")
-                st.success("API key saved for this session. Restart the app to use the saved key.")
+                st.session_state.groq_api_key = api_key
         
         return api_key
+
+    def test_api_key(self):
+        try:
+            self.get_models()
+            st.session_state.api_key_valid = True
+        except Exception:
+            st.session_state.api_key_valid = False
+            self.client = None  # Reset client if key is invalid
 
     def get_models(self):
         if not self.client:
             return None
         
-        headers = {
-            "Authorization": f"Bearer {self.config['api_key']}",
-            "Content-Type": "application/json"
-        }
-        response = requests.get(self.config['api_url'], headers=headers)
+        response = self.client.models.list()
         return response.json()
 
     def chat_completion(self, model, user_input):
