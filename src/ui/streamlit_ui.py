@@ -47,27 +47,36 @@ class TokenMyzerUI:
 
     def _render_main_content(self):
         models = self._get_models()
+        if not models:
+            st.error("Unable to fetch models. Please check your API key and connection.")
+            return
         selected_model_id = self._render_model_selector(models)
+        if not selected_model_id:
+            return
         user_input = st.text_area("Enter your text here:")
 
         if st.button("Submit"):
             self._process_request(user_input, selected_model_id)
 
-        self._update_sidebar()
-
     def _get_models(self):
-        if not self.api.config['api_key']:
-            self.api.config['api_key'] = self.api.get_api_key()
-
         models_data = self.api.get_models()
         if not models_data or 'data' not in models_data:
-            st.error("Unable to fetch models. Please check your API key.")
-            return []
+            st.error("Unable to fetch models. Please check your API key and connection.")
+            return None
         return models_data['data']
 
     def _render_model_selector(self, models):
+        if not models:
+            st.error("No models available to select.")
+            return None
+        
         model_options = [f"{model['id']} - {model['owned_by']} (Context: {model['context_window']})" for model in models]
         selected_model_option = st.selectbox("Select Model", model_options)
+        
+        if not selected_model_option:
+            st.error("Please select a model to proceed.")
+            return None
+        
         return selected_model_option.split(' - ')[0]
 
     def _process_request(self, user_input, selected_model_id):
