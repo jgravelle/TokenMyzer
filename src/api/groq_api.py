@@ -44,7 +44,7 @@ class GroqAPI:
             return None
         
         response = self.client.models.list()
-        return response.json()
+        return response
 
     def chat_completion(self, model, user_input):
         if not self.client:

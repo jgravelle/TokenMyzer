@@ -16,7 +16,7 @@ def main():
         if api_key:
             st.session_state.api.set_api_key(api_key)
             st.session_state.show_api_input = False
-            st.experimental_rerun()
+            st.rerun()
 
     if not st.session_state.api.client or not st.session_state.get('api_key_valid', False):
         st.warning("Please enter a valid Groq API key to use the app.")
@@ -30,7 +30,7 @@ def main():
         if st.button("Clear API Key"):
             st.session_state.api.clear_api_key()
             st.session_state.show_api_input = True
-            st.experimental_rerun()
+            st.rerun()
 
 if __name__ == "__main__":
     main()
