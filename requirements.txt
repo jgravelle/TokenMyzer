@@ -1,0 +1,6 @@
+# requirements.txt
+
+groq
+python-dotenv
+requestsstreamlit
+tiktoken
