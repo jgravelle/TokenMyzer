@@ -1,29 +1,12 @@
-
-import base64
-import os
 import streamlit as st
 from src.utils.text_processors import preprocess_text, remove_articles, count_tokens
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TokenMyzerUI:
     def __init__(self, api):
         self.api = api
-        self._initialize_session_state()
-
-
-    def _add_download_button(self):
-        # Get the path to the tokenmyzer_function.py file
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(current_dir, '..', 'downloadable', 'tokenmyzer_function.py')
-        
-        # Read the content of the file
-        with open(file_path, 'r') as file:
-            tokenmyzer_function = file.read()
-
-        b64 = base64.b64encode(tokenmyzer_function.encode()).decode()
-        href = f'<a href="data:file/txt;base64,{b64}" download="TokenMyzer.py">Download TokenMyzer() Function</a>'
-        st.sidebar.markdown(href, unsafe_allow_html=True)
-
-    def _initialize_session_state(self):
         if 'sent_tokens' not in st.session_state:
             st.session_state.sent_tokens = 0
         if 'received_tokens' not in st.session_state:
@@ -47,36 +30,28 @@ class TokenMyzerUI:
 
     def _render_main_content(self):
         models = self._get_models()
-        if not models:
-            st.error("Unable to fetch models. Please check your API key and connection.")
-            return
-        selected_model_id = self._render_model_selector(models)
-        if not selected_model_id:
-            return
-        user_input = st.text_area("Enter your text here:")
+        if models:
+            selected_model_id = self._render_model_selector(models)
+            user_input = st.text_area("Enter your text here:")
 
-        if st.button("Submit"):
-            self._process_request(user_input, selected_model_id)
+            if st.button("Submit"):
+                self._process_request(user_input, selected_model_id)
+        else:
+            st.error("Unable to fetch models. Please check your API key and connection.")
 
     def _get_models(self):
-        models_data = self.api.get_models()
-        if not models_data or 'data' not in models_data:
-            st.error("Unable to fetch models. Please check your API key and connection.")
+        logger.info("Attempting to get models in UI")
+        models = self.api.get_models()
+        if models and hasattr(models, 'data'):
+            logger.info(f"Successfully got models in UI: {models.data}")
+            return models.data
+        else:
+            logger.error("Failed to get models or models data is missing")
             return None
-        return models_data['data']
 
     def _render_model_selector(self, models):
-        if not models:
-            st.error("No models available to select.")
-            return None
-        
-        model_options = [f"{model['id']} - {model['owned_by']} (Context: {model['context_window']})" for model in models]
+        model_options = [f"{model.id} - {model.owned_by} (Context: {model.context_window})" for model in models]
         selected_model_option = st.selectbox("Select Model", model_options)
-        
-        if not selected_model_option:
-            st.error("Please select a model to proceed.")
-            return None
-        
         return selected_model_option.split(' - ')[0]
 
     def _process_request(self, user_input, selected_model_id):
@@ -87,9 +62,12 @@ class TokenMyzerUI:
         
         st.session_state.sent_tokens = count_tokens(processed_input)
         response = self.api.chat_completion(selected_model_id, processed_input)
-        response_text = response.choices[0].message.content
-        st.session_state.received_tokens = response.usage.completion_tokens
-        st.write(response_text)
+        if response:
+            response_text = response.choices[0].message.content
+            st.session_state.received_tokens = response.usage.completion_tokens
+            st.write(response_text)
+        else:
+            st.error("Failed to get a response from the API.")
 
         st.session_state.request_count += 1
 
@@ -107,7 +85,6 @@ class TokenMyzerUI:
         
         return text
 
-
     def _update_sidebar(self):
         st.sidebar.header("Token Information")
         st.sidebar.write(f"Sent Tokens: {st.session_state.sent_tokens}")
@@ -116,16 +93,6 @@ class TokenMyzerUI:
         st.sidebar.write(f"Total Tokens: {current_total}")
         st.sidebar.write(f"Previous Total Tokens: {st.session_state.previous_total_tokens}")
 
-        # Calculate the difference
-        difference = abs(current_total - st.session_state.previous_total_tokens)
-
-        # Determine the color based on the comparison
-        if current_total > st.session_state.previous_total_tokens:
-            color = "red"
-        elif current_total < st.session_state.previous_total_tokens:
-            color = "green"
-        else:
-            color = "yellow"
-
-        # Display the difference with appropriate color
-        st.sidebar.markdown(f"Difference: <font color='{color}'>{difference}</font>", unsafe_allow_html=True)
+    def _add_download_button(self):
+        # Implementation for download button
+        pass
