@@ -14,24 +14,22 @@ class GroqAPI:
         api_key = self.get_api_key()
         if api_key:
             self.client = Groq(api_key=api_key)
-            self.test_api_key()  # Test the API key
+            self.test_api_key()
 
     def get_api_key(self):
-        # Try to get the API key from environment variables
         load_dotenv()
-        api_key = os.getenv("GROQ_API_KEY")
-        
-        # If not found in environment, check session state
-        if not api_key and 'groq_api_key' in st.session_state:
-            api_key = st.session_state.groq_api_key
-        
-        # If still not found, prompt the user
-        if not api_key:
-            api_key = st.text_input("Please enter your Groq API key:", type="password", key="api_key_input")
-            if api_key:
-                st.session_state.groq_api_key = api_key
-        
-        return api_key
+        return os.getenv("GROQ_API_KEY") or st.session_state.get('groq_api_key')
+
+    def set_api_key(self, api_key):
+        st.session_state.groq_api_key = api_key
+        self.initialize_client()
+
+    def clear_api_key(self):
+        if 'groq_api_key' in st.session_state:
+            del st.session_state.groq_api_key
+        if 'api_key_valid' in st.session_state:
+            del st.session_state.api_key_valid
+        self.client = None
 
     def test_api_key(self):
         try:
@@ -39,7 +37,7 @@ class GroqAPI:
             st.session_state.api_key_valid = True
         except Exception:
             st.session_state.api_key_valid = False
-            self.client = None  # Reset client if key is invalid
+            self.client = None
 
     def get_models(self):
         if not self.client:
