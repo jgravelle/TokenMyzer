@@ -1,6 +1,12 @@
-import streamlit as st
-from src.utils.text_processors import preprocess_text, remove_articles, count_tokens
+#src/ui/streamlit_ui.py
+
+import base64
 import logging
+import os
+import streamlit as st
+
+from src.utils.text_processors import preprocess_text, remove_articles, count_tokens
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,13 +26,12 @@ class TokenMyzerUI:
         st.title("TokenMyzer")
         self._render_sidebar()
         self._render_main_content()
-        self._add_download_button()
 
     def _render_sidebar(self):
         st.sidebar.header("Options")
         st.session_state.remove_articles = st.sidebar.checkbox("Tarzanifier")
         st.session_state.preprocess = st.sidebar.checkbox("Clean-Up")
-        st.session_state.be_concise = st.sidebar.checkbox("Be Concise")
+        st.session_state.be_concise = st.sidebar.checkbox("Concise Response")
 
     def _render_main_content(self):
         models = self._get_models()
@@ -36,6 +41,8 @@ class TokenMyzerUI:
 
             if st.button("Submit"):
                 self._process_request(user_input, selected_model_id)
+                self._update_sidebar()
+                
         else:
             st.error("Unable to fetch models. Please check your API key and connection.")
 
@@ -93,6 +100,21 @@ class TokenMyzerUI:
         st.sidebar.write(f"Total Tokens: {current_total}")
         st.sidebar.write(f"Previous Total Tokens: {st.session_state.previous_total_tokens}")
 
+        # Calculate and display the difference
+        difference = current_total - st.session_state.previous_total_tokens
+        color = "red" if difference > 0 else "green" if difference < 0 else "yellow"
+        st.sidebar.markdown(f"Difference: <font color='{color}'>{abs(difference)}</font>", unsafe_allow_html=True)
+        self._add_download_button()
+
     def _add_download_button(self):
-        # Implementation for download button
-        pass
+        # Get the path to the tokenmyzer_function.py file
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(current_dir, '..', 'downloadable', 'tokenmyzer_function.py')
+        
+        # Read the content of the file
+        with open(file_path, 'r') as file:
+            tokenmyzer_function = file.read()
+
+        b64 = base64.b64encode(tokenmyzer_function.encode()).decode()
+        href = f'<a href="data:file/txt;base64,{b64}" download="TokenMyzer.py">Download TokenMyzer() Function</a>'
+        st.sidebar.markdown(href, unsafe_allow_html=True)
