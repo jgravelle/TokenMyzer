@@ -2,5 +2,6 @@
 
 groq
 python-dotenv
-requestsstreamlit
+requests
+streamlit
 tiktoken
