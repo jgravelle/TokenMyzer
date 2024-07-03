@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def main():
-    st.set_page_config(page_title="TokenMyzer", page_icon="🔤", layout="wide")
+    st.set_page_config(page_title="TokenMyzer", page_icon="ⅉ", layout="wide")
     
     logger.info("Starting TokenMyzer app")
 
