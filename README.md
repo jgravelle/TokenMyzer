@@ -1,31 +1,10 @@
+![image](https://github.com/jgravelle/TokenMyzer/assets/3400540/fcae661f-4ce7-4ecc-8164-db0488a723a1)
+
+
 # TokenMyzer
 
 TokenMyzer is a Streamlit-based application designed to optimize text input for AI language models. It provides text preprocessing options to reduce token usage and improve efficiency in AI interactions.
 
-
-## Directory Structure
-
-TokenMyzer/  
-├── .gitignore  
-├── requirements.txt  
-├── README.md  
-├── app.py  
-├── config/  
-│   └── config.py  
-├── src/  
-│   ├── api/  
-│   │   └── groq_api.py  
-│   ├── ui/  
-│   │   └── streamlit_ui.py  
-│   ├── utils/  
-│   │   ├── common_words.txt  
-│   │   ├── helpers.py  
-│   │   └── text_processors.py  
-│   └── downloadable/  
-│       └── tokenmyzer_function.py  
-└── tests/  
-└── test_groq_api.py  
-  
 
 ## TokenMyzer Function
 
@@ -42,7 +21,7 @@ The `TokenMyzer()` function is available as a standalone Python function that ca
 from TokenMyzer import TokenMyzer
 
 original_text = "This is a sample text that needs processing."
-processed_text = TokenMyzer(original_text, clean=True, Tarzan=True, concise=True)
+*processed_text = TokenMyzer(original_text, clean=True, Tarzan=True, concise=True)*
 print(processed_text)
 ```
 
@@ -108,6 +87,31 @@ Be Concise: Appends "Be concise." to the request.
 Click "Submit" to process your text and send it to the API.
 View the token usage information in the sidebar.
 Download the standalone TokenMyzer function using the button in the sidebar.
+
+## Directory Structure
+
+TokenMyzer/  
+├── .gitignore  
+├── requirements.txt  
+├── README.md  
+├── app.py  
+├── config/  
+│   └── config.py  
+├── src/  
+│   ├── api/  
+│   │   └── groq_api.py  
+│   ├── ui/  
+│   │   └── streamlit_ui.py  
+│   ├── utils/  
+│   │   ├── common_words.txt  
+│   │   ├── helpers.py  
+│   │   └── text_processors.py  
+│   └── downloadable/  
+│       └── tokenmyzer_function.py  
+└── tests/  
+└── test_groq_api.py  
+  
+
 
 ###Contributing
 Contributions to TokenMyzer are welcome! Please feel free to submit a Pull Request.
