@@ -5,27 +5,27 @@ TokenMyzer is a Streamlit-based application designed to optimize text input for 
 
 ## Directory Structure
 
-TokenMyzer/
-├── .gitignore
-├── requirements.txt
-├── README.md
-├── app.py
-├── config/
-│   └── config.py
-├── src/
-│   ├── api/
-│   │   └── groq_api.py
-│   ├── ui/
-│   │   └── streamlit_ui.py
-│   ├── utils/
-│   │   ├── common_words.txt
-│   │   ├── helpers.py
-│   │   └── text_processors.py
-│   └── downloadable/
-│       └── tokenmyzer_function.py
-└── tests/
-└── test_groq_api.py
-
+TokenMyzer/  
+├── .gitignore  
+├── requirements.txt  
+├── README.md  
+├── app.py  
+├── config/  
+│   └── config.py  
+├── src/  
+│   ├── api/  
+│   │   └── groq_api.py  
+│   ├── ui/  
+│   │   └── streamlit_ui.py  
+│   ├── utils/  
+│   │   ├── common_words.txt  
+│   │   ├── helpers.py  
+│   │   └── text_processors.py  
+│   └── downloadable/  
+│       └── tokenmyzer_function.py  
+└── tests/  
+└── test_groq_api.py  
+  
 
 ## TokenMyzer Function
 
