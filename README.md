@@ -21,7 +21,7 @@ The `TokenMyzer()` function is available as a standalone Python function that ca
 from TokenMyzer import TokenMyzer
 
 original_text = "This is a sample text that needs processing."
-*processed_text = TokenMyzer(original_text, clean=True, Tarzan=True, concise=True)*
+processed_text = TokenMyzer(original_text, clean=True, Tarzan=True, concise=True)
 print(processed_text)
 ```
 
